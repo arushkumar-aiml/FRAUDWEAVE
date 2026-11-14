@@ -8,10 +8,10 @@ export default function BriefPage() {
   const { id } = useParams<{ id: string }>(); const [b, setB] = useState<Brief | null>(null); const [err, setErr] = useState(""); const [copied, setCopied] = useState("");
   useEffect(() => { get<Brief>(`/api/v1/campaigns/${id}/brief`).then(setB).catch(e => setErr(errMsg(e))); }, [id]);
   async function copy() { if (!b) return; try { await navigator.clipboard.writeText(b.report_text); setCopied("Copied."); } catch { setCopied("Copy failed. Select the text manually."); } }
-  if (err) return <p className="ui card text-red-700">{err} <Link href="/campaigns" className="underline">Back</Link></p>;
+  if (err) return <p className="ui card text-red-400">{err} <Link href="/campaigns" className="underline">Back</Link></p>;
   if (!b) return <div className="skeleton w-1/2" />;
   return (<div className="space-y-4 ui"><div className="noprint flex gap-2"><Link href="/campaigns" className="underline text-sm">← Campaigns</Link></div>
-    <h1 className="text-2xl font-bold" style={{ fontFamily: "Georgia,serif" }}>Campaign Brief {b.campaign_id}</h1><p>{b.title}</p>
+    <h1 className="text-2xl font-bold">Campaign Brief {b.campaign_id}</h1><p>{b.title}</p>
     <div className="card text-sm space-y-1"><p>Reports: {b.report_count} (#{b.report_ids.join(", #")})</p><p>Categories: {b.categories.join(", ") || "none"}</p><p>Observed: {b.observed_from} to {b.observed_to}</p>
       <p>Shared indicators (fingerprints): {b.shared_indicators.join(", ") || "none"}</p><p>Evidence score: {b.evidence_score ?? "n/a"} (not a probability)</p>
       <p>Review status: {Object.entries(b.review_status).map(([k, v]) => `${k.replace("_", " ")}: ${v}`).join(", ")}</p></div>

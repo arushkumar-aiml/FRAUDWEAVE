@@ -19,7 +19,7 @@ export default function Campaigns() {
   const rels = (d?.relationships ?? []).filter(r => f === "all" || r.status === (f as Status));
   return (<div className="space-y-5"><h1 className="text-2xl font-bold">Campaign Intelligence</h1>
     <p className="ui text-sm">Suggested relationships between stored reports. The evidence score is not a probability. Only strong, unblocked links group reports; a human can accept, reject or mark insufficient evidence at any time.</p>
-    {err && <p className="ui card text-red-700">Backend unavailable: {err}</p>}{!d && !err && <div className="skeleton w-1/2" />}
+    {err && <p className="ui card text-red-400">Backend unavailable: {err}</p>}{!d && !err && <div className="skeleton w-1/2" />}
     {d && <><h2 className="text-xl font-bold">Campaigns</h2>{d.clusters.length === 0 ? <p className="ui text-sm card">No linked campaigns yet.</p> :
       d.clusters.map(c => <div key={c.campaign_id} className="card ui text-sm"><b>{c.campaign_id}</b> · {c.size} reports · {c.categories.join(", ")} · <Link className="underline" href={`/campaigns/${c.campaign_id}`}>Open Campaign Brief</Link></div>)}
       <h2 className="text-xl font-bold">Relationships</h2>

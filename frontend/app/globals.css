@@ -1,6 +1,52 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap");
 @tailwind base; @tailwind components; @tailwind utilities;
-body{background:#f7f5ef;color:#14213d;font-family:Georgia,"Times New Roman",serif}
-.ui{font-family:system-ui,sans-serif}
-@media print { .noprint { display: none !important; } body { background: #fff; } }
-.card{background:#fff;border:1px solid rgba(20,33,61,.25);padding:1rem}
-.skeleton{background:linear-gradient(90deg,#e8e5db,#f3f1ea,#e8e5db);height:1rem;border-radius:2px}
+
+:root { color-scheme: dark; }
+body {
+  background-color: #050b18;
+  background-image:
+    radial-gradient(900px 400px at 85% -10%, rgba(59,158,255,.14), transparent 70%),
+    linear-gradient(rgba(59,158,255,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,158,255,.045) 1px, transparent 1px);
+  background-size: auto, 40px 40px, 40px 40px;
+  color: #dbe7f7;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  line-height: 1.5;
+}
+.ui { font-family: inherit; }
+h1 { letter-spacing: -0.01em; }
+main a { color: #6cb8ff; }
+main a:hover { color: #9fd0ff; }
+
+.card {
+  background: rgba(10, 24, 46, .92);
+  border: 1px solid #1c3a68;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,.35);
+}
+.skeleton { background: linear-gradient(90deg,#10233f,#1a3558,#10233f); height: 1rem; border-radius: 4px; }
+
+input, textarea {
+  background: #08142a; color: #dbe7f7; border-radius: 6px;
+  border-color: #24477d !important;
+}
+input::placeholder, textarea::placeholder { color: #6f89b0; }
+button { border-radius: 6px; border-color: #3b9eff; color: #bcdcff; }
+button.bg-ink { color: #04101f; font-weight: 600; }
+button:not(:disabled):hover { filter: brightness(1.25); }
+button:disabled { cursor: not-allowed; }
+
+mark { background: #f5b942; color: #050b18; border-radius: 3px; }
+pre { color: #bcdcff; }
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 2px solid #6cb8ff; outline-offset: 2px;
+}
+::selection { background: rgba(59,158,255,.4); }
+
+@media print {
+  .noprint { display: none !important; }
+  body { background: #fff; color: #000; }
+  .card { background: #fff; color: #000; border-color: #999; box-shadow: none; }
+  main a { color: #000; }
+}

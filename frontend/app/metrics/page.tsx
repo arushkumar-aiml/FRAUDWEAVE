@@ -8,12 +8,12 @@ const Table = ({ rows }: { rows: [string, Metric | undefined][] }) => (<table cl
 export default function MetricsPage() {
   const [d, setD] = useState<Metrics | null>(null); const [err, setErr] = useState("");
   useEffect(() => { get<Metrics>("/api/v1/metrics").then(setD).catch(e => setErr(errMsg(e))); }, []);
-  if (err) return <p className="ui card text-red-700">{err}</p>; if (!d) return <div className="skeleton w-1/2" />;
+  if (err) return <p className="ui card text-red-400">{err}</p>; if (!d) return <div className="skeleton w-1/2" />;
   if (d.available === false) return <p className="ui card">No metrics yet. {d.hint}</p>;
-  return (<div className="ui space-y-4"><h1 className="text-2xl font-bold" style={{ fontFamily: "Georgia,serif" }}>Evaluation Metrics</h1>
+  return (<div className="ui space-y-4"><h1 className="text-2xl font-bold">Evaluation Metrics</h1>
     <p className="text-sm">Development set: {d.n} messages ({d.scam} scam / {d.legit} legitimate), hand-written/synthetic. {d.split}.</p>
     <Table rows={[["Combined (rules + ML check)", d.full_pipeline], ["Rules only", d.rules_only], ["ML only", d.ml_only]]} />
-    <h2 className="font-bold">Confusion matrix (combined)</h2><pre className="text-xs bg-white border p-2 overflow-x-auto">{JSON.stringify(d.full_pipeline.confusion, null, 2)}</pre>
+    <h2 className="font-bold">Confusion matrix (combined)</h2><pre className="text-xs bg-panel border p-2 overflow-x-auto">{JSON.stringify(d.full_pipeline.confusion, null, 2)}</pre>
     <p className="text-xs border-l-4 border-flag pl-2">{d.caveat} Rules were refined using failures on this same set, so these figures are optimistic.</p>
     {d.challenge ? <><h2 className="font-bold">Challenge set ({d.challenge.n} messages, rules frozen)</h2><Table rows={[["Combined", d.challenge.full_pipeline], ...(Object.entries(d.challenge.by_kind) as [string, Metric][])]} />
       <p className="text-xs">{d.challenge.rules_frozen_note}</p></> : <p className="text-sm">No independent challenge set has been run yet.</p>}</div>);
