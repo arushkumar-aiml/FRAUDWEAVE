@@ -10,10 +10,16 @@ WEIGHTS = {"shared_vpa": 0.5, "shared_domain": 0.5, "text_similarity": 0.3, "sha
 def fp(value: str) -> str:
     return hmac.new(config.hmac_key(), value.lower().encode(), hashlib.sha256).hexdigest()[:16]
 
+_EMAIL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+_ANY_DOMAIN = re.compile(r"\b(?:[a-z0-9-]+\.)+[a-z]{2,}(?:[/?#]\S*)?", re.I)
+
 def redact(norm: str) -> str:
-    t = re.sub(r"(?:https?://|www\.)\S+", "[URL]", norm)
+    """Mask links (with or without http), emails, UPI IDs, phones and long numbers. Over-redacts on purpose."""
+    from .urls import URL_RE
+    t = _EMAIL.sub("[EMAIL]", norm)
     t = VPA_RE.sub("[VPA]", t)
-    t = re.sub(r"[\w.+-]+@[\w-]+\.[\w.]+", "[EMAIL]", t)
+    t = URL_RE.sub("[URL]", t)
+    t = _ANY_DOMAIN.sub("[URL]", t)
     t = re.sub(r"(?:\+91[\s-]?)?\d{10}\b", "[PHONE]", t)
     return re.sub(r"\b\d{6,}\b", "[NUM]", t)
 

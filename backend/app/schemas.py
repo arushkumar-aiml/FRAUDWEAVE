@@ -12,4 +12,5 @@ from typing import Literal
 class ReviewRequest(BaseModel):
     a: int
     b: int
-    decision: Literal["accept", "reject"]
+    decision: Literal["accept", "reject", "insufficient_evidence"]
+    note: str = Field(default="", max_length=500)

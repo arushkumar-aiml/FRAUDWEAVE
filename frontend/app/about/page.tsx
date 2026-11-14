@@ -1,0 +1,9 @@
+export default function About() {
+  const S = ({ t, children }: { t: string; children: React.ReactNode }) => <section className="card ui text-sm"><h2 className="font-bold mb-1">{t}</h2>{children}</section>;
+  return (<div className="space-y-3"><h1 className="text-2xl font-bold">About & Limitations</h1>
+    <S t="What it is">An explainable triage tool for forwarded scam messages in English, Hindi and Hinglish. Intended users: college cyber-awareness coordinators, trained student volunteers and community members reviewing reports. It is an early-triage aid, not a law-enforcement system.</S>
+    <S t="How detection works">Editable rules return exact matched text and a reason. Links are inspected offline and never opened. Three outcomes: Suspicious, Low apparent risk, Unable to verify. A small TF-IDF model can only downgrade “low risk” to “unable to verify”; it did not beat the rules in our tests.</S>
+    <S t="How campaign linking works">Two reports earn evidence points for a shared UPI ID or domain (strongest), similar wording, shared category and close timing. Common indicators are downweighted; shared shorteners and official bank domains are ignored. The score is capped at 1 and is NOT a probability. Similarity alone is never “strong”. Reports are grouped only when all cross-pairs allow it, and a human can accept, reject or mark insufficient evidence. Weights are heuristics, not statistically validated.</S>
+    <S t="Privacy">Storage needs consent. Text is redacted and indicators are kept as HMAC fingerprints, which is pseudonymization, not anonymization. Reports can be deleted and old data purged.</S>
+    <S t="Limitations">Small, hand-written development data; rules tuned on it; no proof of real-world accuracy. “Low apparent risk” never means safe. A shared indicator does not prove the same criminal. No bank verification, no automatic complaint filing. Report fraud at cybercrime.gov.in or call 1930.</S></div>);
+}

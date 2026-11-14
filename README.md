@@ -30,8 +30,15 @@ report endpoint is rate-limited (20/hour/IP, in-memory); `python scripts\purge.p
 Scores are an *evidence score* (capped at 1.0), never a probability.
 
 ## Honest limits
-- Dataset is a small hand-written seed set (41 rows). Metrics are NOT evidence of real-world accuracy.
+- Dataset is a small hand-written/synthetic set (see metrics.json for exact counts). Rules were tuned on it, so metrics are NOT evidence of real-world accuracy. Independent challenge-set evaluation has not yet been completed.
 - Link weights are unvalidated heuristics. Text similarity alone can never produce a "strong" link.
 - No URL is ever fetched; unknown URLs are never marked safe. No bank/account verification.
 - Stored reports keep only redacted text + HMAC fingerprints. Set FRAUDWEAVE_HMAC_KEY in production.
 - Not yet done: deployment config, URLhaus/PhishTank feeds (needs a vetted offline snapshot), key rotation.
+
+## Deployment
+See DEPLOYMENT.md (Render + Vercel) and DEMO_SCRIPT.md. Env vars: FRAUDWEAVE_HMAC_KEY, FRAUDWEAVE_ORIGINS, FRAUDWEAVE_SEED_DEMO.
+Seed demo data locally: `python scripts\seed_demo.py`.
+
+## Reviewer access
+Set `FRAUDWEAVE_REVIEWER_TOKEN` (PowerShell: `$env:FRAUDWEAVE_REVIEWER_TOKEN="your-secret"` before `uvicorn`). Review/delete endpoints need it; the Campaigns page has a Reviewer login box.

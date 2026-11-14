@@ -1,0 +1,13 @@
+# Security and privacy
+- **Consent:** reports are stored only after an explicit consent step; only messages assessed Suspicious are stored.
+- **Redaction:** URLs, UPI IDs, emails, phone numbers and 6+ digit numbers are masked before storage.
+- **HMAC fingerprints:** indicators (UPI IDs, domains) are stored as keyed hashes. This is PSEUDONYMIZATION, not anonymization: whoever has the key can test guesses. Set `FRAUDWEAVE_HMAC_KEY` via environment; never commit `.hmac_key`. Rotating the key breaks old links.
+- **URLs:** parsed offline only, never fetched, never sent to third parties. Unknown links are never called safe.
+- **Input limits:** 2,000 characters; strict request schemas; notes limited to 500 characters; parameterized SQL only; React escapes all rendered text.
+- **Abuse:** in-memory per-IP rate limit on report storage (20/hour). Not production grade (resets on restart; behind a proxy it keys on the proxy address).
+- **Logging:** raw message text is not logged by the application.
+- **Retention/deletion:** `DELETE /api/v1/reports/{id}` removes a report and its review entries; `python scripts\purge.py 30` removes reports older than 30 days.
+- **CORS:** localhost:3000 plus origins in `FRAUDWEAVE_ORIGINS`.
+- **Reviewer auth:** review, review-log and delete endpoints require a bearer token from `FRAUDWEAVE_REVIEWER_TOKEN` (constant-time compare; 401 missing, 403 wrong, 503 unconfigured). Single shared token, no user accounts, no expiry, no brute-force lockout beyond the proxy.
+- **Redaction:** links with or without http (bare domain/path/query), emails, UPI IDs, phone numbers and 6+ digit numbers are masked; it over-redacts on purpose.
+- **Not claimed:** legal compliance (e.g., India's DPDP Act), an authentication system, or protection against a determined data-poisoning attacker. Anyone can currently submit reports.

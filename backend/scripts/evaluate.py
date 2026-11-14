@@ -32,19 +32,33 @@ def main():
             r["group"] = f"legit{n // 4}"; n += 1
     groups = [r["group"] for r in rows]; labels = [int(r["label"]) for r in rows]
     k = 5
-    full, rules_only = [None] * len(rows), [None] * len(rows)
+    full, rules_only, ml_only = [None] * len(rows), [None] * len(rows), [None] * len(rows)
     for tr, te in StratifiedGroupKFold(n_splits=k, shuffle=True, random_state=42).split(rows, labels, groups):
         ytr = [labels[i] for i in tr]
         m = make_model().fit([normalize(rows[i]["text"]) for i in tr], ytr) if len(set(ytr)) == 2 else None
         for i in te:
             full[i] = analyze(rows[i]["text"], model=m, use_model=m is not None)["outcome"]
             rules_only[i] = analyze(rows[i]["text"], use_model=False)["outcome"]
+            ml_only[i] = ("suspicious" if m is not None and m.predict_proba([normalize(rows[i]["text"])])[0][1] >= 0.5 else "low_apparent_risk")
             if rows[i]["label"] == "1" and rules_only[i] != "suspicious": print("MISSED:", rows[i]["text"][:120])
             if rows[i]["label"] == "0" and rules_only[i] == "suspicious": print("FALSE ALARM:", rows[i]["text"][:120])
     out = {"n": len(rows), "scam": sum(r["label"] == "1" for r in rows), "legit": sum(r["label"] == "0" for r in rows),
            "split": f"StratifiedGroupKFold k={k}; scam rows grouped by campaign family, legit rows in chunks of 4",
-           "full_pipeline": metrics(rows, full), "rules_only": metrics(rows, rules_only),
+           "full_pipeline": metrics(rows, full), "rules_only": metrics(rows, rules_only), "ml_only": metrics(rows, ml_only),
            "caveat": "Dataset is a SMALL, hand-written SEED set; rules were written by the same author, so rules_only is optimistic. Replace with real, independently labelled data before trusting these numbers."}
     json.dump(out, open(config.DATA / "metrics.json", "w"), indent=2)
     print(json.dumps(out, indent=2))
-main()
+def challenge(path):
+    import csv
+    dev = load_rows(); m = make_model().fit([normalize(r["text"]) for r in dev], [int(r["label"]) for r in dev])
+    rows = [r for r in csv.DictReader(open(path, encoding="utf-8-sig", newline="")) if r.get("text") and r.get("label") in ("0", "1")]
+    full = [analyze(r["text"], model=m)["outcome"] for r in rows]; ro = [analyze(r["text"], use_model=False)["outcome"] for r in rows]
+    by = {}
+    for r, p in zip(rows, full): by.setdefault(r.get("kind", "?"), []).append((r, p))
+    out = {"n": len(rows), "source_file": path, "rules_frozen_note": "Run ONLY after freezing rules. Do not tune on this file and still call it independent.",
+           "full_pipeline": metrics(rows, full), "rules_only": metrics(rows, ro),
+           "by_kind": {k: metrics([x[0] for x in v], [x[1] for x in v]) for k, v in by.items()}}
+    json.dump(out, open(config.DATA / "metrics_challenge.json", "w"), indent=2); print(json.dumps(out, indent=2))
+
+if len(sys.argv) > 2 and sys.argv[1] == "--challenge": challenge(sys.argv[2])
+else: main()

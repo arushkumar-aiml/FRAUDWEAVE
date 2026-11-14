@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: fraudweave-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: FRAUDWEAVE_ORIGINS
+        sync: false
+      - key: FRAUDWEAVE_HMAC_KEY
+        generateValue: true
+      - key: FRAUDWEAVE_REVIEWER_TOKEN
+        generateValue: true
+      - key: FRAUDWEAVE_SEED_DEMO
+        value: "1"

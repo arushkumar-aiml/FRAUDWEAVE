@@ -3,7 +3,7 @@ from pathlib import Path
 BASE = Path(__file__).parent
 DATA = BASE / "data"
 DB_PATH = os.environ.get("FRAUDWEAVE_DB", str(BASE.parent / "fraudweave.db"))
-ALLOWED_ORIGINS = ["http://localhost:3000"]
+ALLOWED_ORIGINS = ["http://localhost:3000"] + [o.strip() for o in os.environ.get("FRAUDWEAVE_ORIGINS", "").split(",") if o.strip()]
 MAX_TEXT = 2000
 MIN_CATEGORY_COUNT = 3  # trends hide categories with fewer reports
 
@@ -15,3 +15,6 @@ def hmac_key() -> bytes:
     if not f.exists():
         f.write_text(secrets.token_hex(32))
     return f.read_text().strip().encode()
+
+def reviewer_token():
+    return os.environ.get("FRAUDWEAVE_REVIEWER_TOKEN", "")

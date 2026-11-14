@@ -1,0 +1,6 @@
+# Dataset card
+**Development set** (`backend/app/data/dataset.csv`): row counts are computed when you run `python scripts\evaluate.py` and shown on the Metrics page / `metrics.json`. The ZIP ships a small 41-row seed file (23 scam, 18 legitimate); the author's working copy is a larger 147-row file (120 scam, 27 legitimate). Always quote the counts from your own `metrics.json`. English/Hindi/Hinglish, 8 scam categories. LLM-generated/hand-written, synthetic, no real victims. Rules were refined using failures on this same set, so its metrics are optimistic.
+Known gaps: only 27 legitimate rows, almost none with links or scam-like vocabulary; scam rows are templated.
+
+**Challenge set** (`backend/app/data/challenge_template.csv`, currently EMPTY): columns `text,label,kind,lang,author`. label 1=scam, 0=legitimate (borderline cases get your best judgement). kind: `bank_legit | utility_legit | scam | borderline`. Target 40 rows (10/10/10/10), ideally written by someone other than the rule author.
+Workflow: freeze rules and commit -> fill the CSV -> `python scripts\evaluate.py --challenge app\data\challenge_template.csv` -> report whatever comes out. Do not edit rules after seeing results and still call it independent. Write `author` honestly; if you wrote them yourself, say "self-authored" in the report.

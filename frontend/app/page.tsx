@@ -1,29 +1,27 @@
 "use client";
-import { useState } from "react";
-import { post } from "../lib/api";
-type Ev = { rule_id: string; matched_text: string; start: number; end: number; reason: string; weight: number };
-type Res = { outcome: string; risk_score: number; model_confidence: number | null; categories: string[]; evidence: Ev[];
-  urls: { url: string; domain: string; flags: string[] }[]; recommended_actions: string[]; disclaimer: string };
-const LABEL: Record<string, string> = { suspicious: "Suspicious", low_apparent_risk: "Low apparent risk (not a guarantee)", unable_to_verify: "Unable to verify" };
-export default function Analyze() {
-  const [text, setText] = useState(""); const [res, setRes] = useState<Res | null>(null);
-  const [err, setErr] = useState(""); const [busy, setBusy] = useState(false); const [msg, setMsg] = useState("");
-  async function run() { setBusy(true); setErr(""); setMsg(""); try { setRes(await post<Res>("/api/v1/analyze", { text })); } catch (e: any) { setErr(e.message); } setBusy(false); }
-  async function share() { try { const r: any = await post("/api/v1/reports", { text, consent: true }); setMsg(r.stored ? "Reported anonymously (redacted)." : r.duplicate ? "Already reported." : r.reason); } catch (e: any) { setMsg(e.message); } }
-  return (<div className="space-y-4">
-    <h1 className="text-2xl font-bold">Paste a suspicious message</h1>
-    <textarea className="ui w-full h-36 border border-ink/30 p-3 bg-white" maxLength={2000} value={text} onChange={e => setText(e.target.value)} placeholder="English, Hindi or Hinglish. Do not paste real OTPs or PINs." />
-    <button onClick={run} disabled={busy || !text.trim()} className="ui bg-ink text-paper px-4 py-2 disabled:opacity-40">{busy ? "Analyzing…" : "Analyze"}</button>
-    {err && <p className="ui text-red-700">{err}</p>}
-    {res && (<section className="space-y-3 border-t border-ink/20 pt-4">
-      <p className="text-xl font-bold">{LABEL[res.outcome]} <span className="ui text-sm font-normal">· risk score {res.risk_score}/100</span></p>
-      <p className="ui text-xs">{res.disclaimer}</p>
-      {res.evidence.length > 0 && <div><h2 className="font-bold">Evidence</h2><ul className="ui text-sm space-y-1">
-        {res.evidence.map(e => <li key={e.rule_id}><mark className="bg-flag px-1">{e.matched_text}</mark> — {e.reason} <span className="opacity-60">({e.rule_id}, +{e.weight})</span></li>)}</ul></div>}
-      {res.urls.length > 0 && <div><h2 className="font-bold">Links (never opened)</h2><ul className="ui text-sm">
-        {res.urls.map(u => <li key={u.domain}>{u.domain}: {u.flags.length ? u.flags.join(", ") : "no flags, but unknown links are never marked safe"}</li>)}</ul></div>}
-      <div><h2 className="font-bold">What to do</h2><ul className="ui text-sm list-disc pl-5">{res.recommended_actions.map(a => <li key={a}>{a}</li>)}</ul></div>
-      {res.outcome === "suspicious" && <button onClick={share} className="ui border border-ink px-3 py-1 text-sm">Share anonymously (I consent)</button>}
-      {msg && <p className="ui text-sm">{msg}</p>}
-    </section>)}</div>);
+import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import { get, errMsg } from "../lib/api";
+import type { Stats } from "../lib/types";
+export default function Dashboard() {
+  const [s, setS] = useState<Stats | null>(null); const [err, setErr] = useState(""); const [busy, setBusy] = useState(true);
+  const load = useCallback(async () => { setBusy(true); setErr(""); try { setS(await get<Stats>("/api/v1/stats")); } catch (e) { setErr(errMsg(e)); } setBusy(false); }, []);
+  useEffect(() => { load(); }, [load]);
+  const max = s ? Math.max(1, ...(Object.values(s.categories) as number[])) : 1;
+  const cards: [string, number | undefined][] = [["Stored reports", s?.total_reports], ["Suspicious reports", s?.suspicious_reports], ["Campaigns (linked)", s?.campaigns],
+    ["Pending links", s?.relationships.pending], ["Accepted", s?.relationships.accepted], ["Rejected / insufficient", s ? s.relationships.rejected + s.relationships.insufficient_evidence : undefined]];
+  return (<div className="space-y-6"><div className="flex justify-between items-baseline"><h1 className="text-2xl font-bold">Dashboard</h1>
+    <button onClick={load} className="ui border border-ink px-3 py-1 text-sm">{busy ? "Refreshing…" : "Refresh"}</button></div>
+    {err && <p className="ui card text-red-700">Backend unavailable: {err}</p>}
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">{cards.map(([l, v]) => <div key={l} className="card ui"><p className="text-xs opacity-70">{l}</p>
+      {v === undefined ? <div className="skeleton mt-2 w-12" /> : <p className="text-3xl font-bold">{v}</p>}</div>)}</div>
+    {s && s.total_reports === 0 && <p className="ui card text-sm">No reports yet. Analyze a message and choose “Share anonymously”, or seed demo data (see README).</p>}
+    {s && s.total_reports > 0 && <><section className="card ui"><h2 className="font-bold mb-2">Scam categories</h2>
+      {Object.keys(s.categories).length === 0 ? <p className="text-sm">Hidden until a category has at least {s.threshold} reports (privacy threshold).</p> :
+        (Object.entries(s.categories) as [string, number][]).map(([k, v]) => <div key={k} className="flex items-center gap-2 text-sm mb-1"><span className="w-40">{k}</span>
+          <span className="bg-flag h-3" style={{ width: `${(v / max) * 60}%` }} /><span>{v}</span></div>)}
+      {s.categories_hidden_below_threshold > 0 && <p className="text-xs opacity-70 mt-2">{s.categories_hidden_below_threshold} categor{s.categories_hidden_below_threshold > 1 ? "ies" : "y"} hidden (under threshold).</p>}</section>
+      <section className="card ui"><h2 className="font-bold mb-2">Recent activity</h2><ul className="text-sm space-y-1">
+        {s.recent.map(r => <li key={r.id}>#{r.id} · {r.time} · {r.categories.join(", ") || "uncategorised"} · risk {r.risk}</li>)}</ul></section></>}
+    <p className="ui text-sm"><Link href="/analyze" className="underline">Analyze a message</Link> · <Link href="/campaigns" className="underline">Review campaign links</Link></p></div>);
 }

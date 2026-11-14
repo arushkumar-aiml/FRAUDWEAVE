@@ -1,0 +1,13 @@
+export type Evidence = { signal: string; points: number; detail: string; strength: string };
+export type Status = "pending" | "accepted" | "rejected" | "insufficient_evidence";
+export type Relationship = { a: number; b: number; level: string; score: number; raw_total: number; explanation: string; evidence: Evidence[]; status: Status; note: string; reviewed_at: string | null };
+export type Brief = { campaign_id: string; title: string; report_count: number; report_ids: number[]; categories: string[]; observed_from: string; observed_to: string;
+  shared_indicators: string[]; templates: string[]; evidence_score: number | null; evidence_breakdown: Evidence[]; explanation: string; review_status: Record<string, number>;
+  victim_advice: string[]; report_text: string; links: { cybercrime_portal: string; helpline: string }; disclaimer: string };
+export type Cluster = { campaign_id: string; size: number; report_ids: number[]; categories: string[]; brief: Brief };
+export type CampaignsResp = { clusters: Cluster[]; relationships: Relationship[]; report_count: number; trends: Record<string, number>; trend_min_reports: number };
+export type Stats = { total_reports: number; suspicious_reports: number; campaigns: number; relationships: Record<Status, number>; categories: Record<string, number>;
+  categories_hidden_below_threshold: number; threshold: number; recent: { id: number; time: string; categories: string[]; outcome: string; risk: number }[] };
+export type Metric = { precision: number | null; recall: number | null; f1: number | null; false_positive_rate: number | null; abstention_rate: number; tp: number; fp: number; fn: number; confusion: Record<string, Record<string, number>> };
+export type Metrics = { available?: boolean; hint?: string; n: number; scam: number; legit: number; split: string; caveat: string; full_pipeline: Metric; rules_only: Metric; ml_only?: Metric;
+  challenge: null | { n: number; rules_frozen_note: string; full_pipeline: Metric; by_kind: Record<string, Metric> } };

@@ -15,3 +15,10 @@
 Review rule coverage, false-positive risks, link weights, privacy design, frontend code.
 ## HANDOFF FOR GEMINI
 Need 100+ real-style Hindi/Hinglish scam samples and 50+ legitimate Indian bank/UPI/OTP messages, with sources and licences, no personal data.
+
+## v3.0 (sandbox-verified via pytest-free runner: 0 failures)
+Review workflow, complete-link merge, brief, stats, deletion, hard negatives, link families. Challenge set NOT yet collected.
+NOT verified: pytest on API routes (needs fastapi), `npm run build`, running frontend against backend, rate-limit test, frontend tests (none written).
+Skipped on purpose: Recharts/Lucide (extra dependencies), separate ARCHITECTURE/EVALUATION_REPORT/TEST_RESULTS files, user validation (no participants yet).
+
+## v3.1: bare-domain redaction fix + reviewer token auth (logic tests pass in sandbox; API auth tests in tests/test_auth_api.py NOT run here, need pytest+fastapi). Frontend build still unverified.
