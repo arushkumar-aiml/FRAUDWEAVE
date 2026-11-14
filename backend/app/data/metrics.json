@@ -1,0 +1,45 @@
+{
+  "n": 147,
+  "scam": 120,
+  "legit": 27,
+  "split": "StratifiedGroupKFold k=5; scam rows grouped by campaign family, legit rows in chunks of 4",
+  "full_pipeline": {
+    "precision": 1.0,
+    "recall": 0.975,
+    "f1": 0.987,
+    "false_positive_rate": 0.0,
+    "abstention_rate": 0.02,
+    "tp": 117,
+    "fp": 0,
+    "fn": 3,
+    "confusion": {
+      "scam": {
+        "suspicious": 117,
+        "unable_to_verify": 3
+      },
+      "legit": {
+        "low_apparent_risk": 27
+      }
+    }
+  },
+  "rules_only": {
+    "precision": 1.0,
+    "recall": 0.975,
+    "f1": 0.987,
+    "false_positive_rate": 0.0,
+    "abstention_rate": 0.02,
+    "tp": 117,
+    "fp": 0,
+    "fn": 3,
+    "confusion": {
+      "scam": {
+        "suspicious": 117,
+        "unable_to_verify": 3
+      },
+      "legit": {
+        "low_apparent_risk": 27
+      }
+    }
+  },
+  "caveat": "Dataset is a SMALL, hand-written SEED set; rules were written by the same author, so rules_only is optimistic. Replace with real, independently labelled data before trusting these numbers."
+}

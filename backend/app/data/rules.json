@@ -1,0 +1,223 @@
+[
+    {
+        "id": "URGENCY",
+        "category": "general",
+        "weight": 25,
+        "strong": false,
+        "reason": "Creates urgency or threatens account/service loss.",
+        "patterns": [
+            "\\b(account|khata|connection|sim|card)\\b.{0,30}\\b(band|block(ed)?|suspend(ed)?|cut|disconnect\\w*|deactivat\\w*|restricted|locked|frozen|freeze|unfreeze)\\b",
+            "\\bavoid\\b.{0,25}\\b(cut\\w*|disconnect\\w*|block\\w*|freeze|suspend\\w*|terminat\\w*)",
+            "\\b(aaj raat|today only|tonight)\\b",
+            "(बंद हो जाएगा|ब्लॉक|काट दी जाएगी|काट दिया जाएगा|कट जाएगा|कट जाएगी|डिस्कनेक्ट|फ्रीज|निष्क्रिय|आज रात)"
+        ]
+    },
+    {
+        "id": "KYC_UPDATE",
+        "category": "kyc",
+        "weight": 35,
+        "strong": false,
+        "reason": "Demands KYC/PAN/Aadhaar update, a common phishing pretext.",
+        "patterns": [
+            "\\b(kyc|pan|aadhaar|aadhar)\\b.{0,40}\\b(update|expire\\w*|pending|verify|verification|nahi|link)\\w*",
+            "(केवाईसी|आधार|पैन)",
+            "\\b(update|verify|complete|re-?verify|pending)\\b.{0,25}\\b(kyc|pan|aadhaar|aadhar)\\b",
+            "\\b(kyc)\\b.{0,30}\\b(details|portal|penalty)\\b"
+        ]
+    },
+    {
+        "id": "OTP_PIN_REQUEST",
+        "category": "general",
+        "weight": 60,
+        "strong": true,
+        "reason": "Asks you to share/enter OTP, PIN or CVV. Banks never ask for this.",
+        "patterns": [
+            "\\b(share|send|enter|tell|bata\\w*|bhej\\w*|dijiye|dalein)\\b.{0,25}\\b(otp|pin|cvv)\\b",
+            "\\b(otp|pin|cvv)\\b.{0,25}(daal\\w*|dale\\w*|dalein|darj)",
+            "\\b(pin|otp)\\b.{0,12}\\benter (kare|karo|karke|kar)\\b",
+            "(पिन|PIN|OTP).{0,25}(डाल|दर्ज)"
+        ]
+    },
+    {
+        "id": "UPI_PIN_TO_RECEIVE",
+        "category": "upi_manipulation",
+        "weight": 60,
+        "strong": true,
+        "reason": "UPI PIN is only needed to PAY, never to receive money or a refund.",
+        "patterns": [
+            "\\bpin\\b.{0,40}\\b(receive|refund|credit)\\b",
+            "\\b(receive|refund)\\b.{0,40}\\bpin\\b"
+        ]
+    },
+    {
+        "id": "FAKE_REFUND",
+        "category": "fake_refund",
+        "weight": 35,
+        "strong": false,
+        "reason": "Refund paired with a link, approval or collect request.",
+        "patterns": [
+            "\\brefund\\b.{0,60}\\b(click|link|collect|approve|accept|authori[sz]e|notification|request)\\b",
+            "\\bcollect request\\b",
+            "(रिफंड|वापस).{0,80}(अप्रूव|स्वीकार|रिक्वेस्ट)",
+            "\\b(reverse|reversal)\\b.{0,30}\\b(charge\\w*|payment|transaction)\\b",
+            "\\bextra charged\\b",
+            "\\brefund\\b.{0,60}\\bapproval\\b"
+        ]
+    },
+    {
+        "id": "ELECTRICITY_CUT",
+        "category": "electricity",
+        "weight": 35,
+        "strong": false,
+        "reason": "Electricity disconnection threat tied to a bill/payment.",
+        "patterns": [
+            "\\b(bijli|electricity|power|meter)\\b.{0,60}\\b(cut\\w*|katne|kaat\\w*|disconnect\\w*|bill)\\b",
+            "बिजली.{0,60}(काट|कट|डिस्कनेक्ट|बिल)"
+        ]
+    },
+    {
+        "id": "JOB_TASK",
+        "category": "job",
+        "weight": 35,
+        "strong": false,
+        "reason": "Part-time/task job promising easy daily income.",
+        "patterns": [
+            "\\b(job|jobs|hiring|vacancy|data entry|work from home|part[- ]?time|task|youtube|ghar baithe)\\b.{0,80}\\b(earn|kamao|kamaye|kamaaye|income|salary|per day|daily|weekly|per hour|per review|per assignment|paao|payout)\\b",
+            "(घर बैठे|वर्क फ्रॉम होम|पार्ट[- ]?टाइम|नौकरी|भर्ती).{0,80}(कमाएं|कमाएँ|रोज़|रोज|प्रतिदिन|पाएं)",
+            "\\b(earn|payout|income|salary)\\b.{0,70}\\b(review\\w*|rating|liking|typing|telegram|whatsapp|from home|online|videos?|task|platform)\\b"
+        ]
+    },
+    {
+        "id": "MOVE_TO_CHAT",
+        "category": "job",
+        "weight": 25,
+        "strong": false,
+        "reason": "Pushes you to a Telegram/WhatsApp group.",
+        "patterns": [
+            "\\b(join|contact|message)\\b.{0,30}\\b(telegram|whatsapp)\\b",
+            "\\b(telegram|whatsapp)\\b.{0,30}\\b(group|channel)\\b"
+        ]
+    },
+    {
+        "id": "PARCEL_FEE",
+        "category": "parcel",
+        "weight": 35,
+        "strong": false,
+        "reason": "Parcel/customs held and a fee demanded.",
+        "patterns": [
+            "\\b(parcel|courier|customs|package|fedex|dhl|bluedart|consignment|shipment|speed post|india post)\\b.{0,60}\\b(fee|charge|held|pay|stuck|seized|detained|duty|tax|clearance)\\b",
+            "(पार्सल|कूरियर|कस्टम).{0,70}(शुल्क|चार्ज|रुका|रुक|वितरित नहीं|पते|सीमा)"
+        ]
+    },
+    {
+        "id": "PAY_FEE_LINK",
+        "category": "parcel",
+        "weight": 25,
+        "strong": false,
+        "reason": "Asks to pay a small fee through a link.",
+        "patterns": [
+            "\\bpay\\b.{0,30}\\b(fee|charge)\\b.{0,40}(https?://|www\\.|bit\\.ly|tinyurl)"
+        ]
+    },
+    {
+        "id": "PAY_TO_VPA",
+        "category": "upi_manipulation",
+        "weight": 40,
+        "strong": false,
+        "reason": "Instructs payment to a UPI handle.",
+        "patterns": [
+            "\\b(pay|send|transfer|bhejo|bhej)\\b.{0,50}\\b[\\w.\\-]{2,}@(ybl|oksbi|okhdfcbank|okaxis|okicici|paytm|apl|ibl|axl|upi|sbi|hdfcbank|icici)\\b"
+        ]
+    },
+    {
+        "id": "BANK_IMPERSONATION",
+        "category": "bank_impersonation",
+        "weight": 25,
+        "strong": false,
+        "reason": "Claims to be a bank/official team asking for action.",
+        "patterns": [
+            "\\b(sbi|hdfc|icici|axis|rbi|paytm)\\b.{0,40}\\b(officer|team|customer care|blocked|suspended)\\b"
+        ]
+    },
+    {
+        "id": "AI_INSTRUCTION",
+        "category": "general",
+        "weight": 10,
+        "strong": false,
+        "reason": "Text tries to instruct an AI/scorer, which is itself suspicious.",
+        "patterns": [
+            "\\b(ignore|disregard)\\b.{0,20}\\b(instructions|previous)\\b",
+            "\\bscore\\s*(of\\s*)?0\\b"
+        ]
+    },
+    {
+        "id": "URGENCY_WORD",
+        "category": "general",
+        "weight": 10,
+        "strong": false,
+        "reason": "Uses pressure words (immediately/urgent/abhi). Weak signal alone.",
+        "patterns": [
+            "\\b(abhi|turant|immediately|urgent(ly)?|instantly|within \\d+ (hours|hrs))\\b",
+            "(अभी|तुरंत)"
+        ]
+    },
+    {
+        "id": "COLLECT_APPROVE",
+        "category": "fake_refund",
+        "weight": 40,
+        "strong": false,
+        "reason": "Asks you to approve/accept a payment or collect request (approving sends money OUT).",
+        "patterns": [
+            "\\b(approve|approval|accept|authori[sz]e|confirm|allow)\\b.{0,40}\\b(collect|payment request|pay request|request|notification|popup)\\b",
+            "\\b(collect request|payment request|pay request)\\b.{0,30}\\b(approve|approval|accept|confirm)\\b",
+            "\\bpayment\\b.{0,15}\\bapprove\\b",
+            "\\bapproval\\b.{0,15}\\bpass\\b",
+            "(अप्रूव|स्वीकार).{0,30}(रिक्वेस्ट|अनुरोध)|(रिक्वेस्ट|अनुरोध).{0,30}(अप्रूव|स्वीकार)"
+        ]
+    },
+    {
+        "id": "LOTTERY_PRIZE",
+        "category": "lottery_prize",
+        "weight": 40,
+        "strong": false,
+        "reason": "Unexpected lottery/prize win, a classic advance-fee or phishing lure.",
+        "patterns": [
+            "\\b(won|winner|jeeta|jackpot|lucky draw|lottery)\\b.{0,70}\\b(prize|lakh|cash|crorepati|claim|rs\\.?\\s?[\\d,]{5,}|car)\\b",
+            "(लकी ड्रा|जीता|विजेता|लॉटरी).{0,70}(लाख|इनाम|पुरस्कार|रुपये|दावा|कार)",
+            "\\b(prize|lakh|cash|crore)\\b.{0,40}\\b(jackpot|jeeta|won|winner|lottery)\\b"
+        ]
+    },
+    {
+        "id": "REWARD_POINTS",
+        "category": "bank_impersonation",
+        "weight": 35,
+        "strong": false,
+        "reason": "Expiring reward points to redeem via a link, common bank-impersonation lure.",
+        "patterns": [
+            "\\b(reward points?|points)\\b.{0,50}\\b(expire\\w*|redeem|cash)\\b",
+            "(रिवॉर्ड पॉइंट|पॉइंट).{0,50}(समाप्त|नकद|बदलें)"
+        ]
+    },
+    {
+        "id": "CREDIT_LIMIT_LURE",
+        "category": "bank_impersonation",
+        "weight": 35,
+        "strong": false,
+        "reason": "Unsolicited credit-limit increase to claim via a link.",
+        "patterns": [
+            "\\b(credit limit|limit)\\b.{0,40}\\b(increase\\w*|upgrade\\w*|badhane|badhaye|badha)\\b"
+        ]
+    },
+    {
+        "id": "FAKE_FRAUD_ALERT",
+        "category": "bank_impersonation",
+        "weight": 35,
+        "strong": false,
+        "reason": "Fake fraud/security alert pushing you to block, cancel or unfreeze via a link.",
+        "patterns": [
+            "\\b(suspicious|unauthori[sz]ed|fraud\\w*|unrecognized|unregistered)\\b.{0,60}\\b(transaction|login|device|transfer)\\b.{0,70}\\b(block|cancel|disable|unfreeze|reverse)\\b",
+            "(संदिग्ध|धोखाधड़ी).{0,40}(लेन-देन|लेनदेन).{0,60}(ब्लॉक|रद्द)",
+            "\\b(transaction|transfer)\\b.{0,60}\\b(agar|if)\\b.{0,30}\\b(nahi|not)\\b.{0,40}\\b(block|cancel)\\b"
+        ]
+    }
+]

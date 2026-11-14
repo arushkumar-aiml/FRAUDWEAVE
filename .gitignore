@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.db
+backend/app/data/.hmac_key
+node_modules/
+.next/
+.env.local
