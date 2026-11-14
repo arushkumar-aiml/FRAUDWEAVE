@@ -8,7 +8,7 @@ from .analysis.pipeline import analyze
 from .analysis.campaign import link
 
 app = FastAPI(title="FraudWeave", version="0.1.0")
-app.add_middleware(CORSMiddleware, allow_origins=config.ALLOWED_ORIGINS, allow_methods=["GET", "POST"], allow_headers=["*"])
+app.add_middleware(CORSMiddleware, allow_origins=config.ALLOWED_ORIGINS, allow_methods=["GET", "POST", "DELETE"], allow_headers=["*"])
 
 @app.on_event("startup")
 def _startup():

@@ -2,7 +2,7 @@
 
 ## 1. Push to GitHub
 Make sure `.gitignore` is present. Never commit `backend/app/data/.hmac_key`, `*.db`, `.env.local`.
-Commit `backend/app/data/metrics.json` (output of `python scripts\evaluate.py`) so the Metrics page has data.
+Run `python scripts\evaluate.py` in `backend` and commit `backend/app/data/metrics.json` so the Metrics page has data. Also commit `frontend/package-lock.json`.
 
 ## 2. Backend on Render (Web Service)
 New > Blueprint (uses `render.yaml`) OR New > Web Service with:

@@ -37,7 +37,7 @@ Scores are an *evidence score* (capped at 1.0), never a probability.
 - Not yet done: deployment config, URLhaus/PhishTank feeds (needs a vetted offline snapshot), key rotation.
 
 ## Deployment
-See DEPLOYMENT.md (Render + Vercel) and DEMO_SCRIPT.md. Env vars: FRAUDWEAVE_HMAC_KEY, FRAUDWEAVE_ORIGINS, FRAUDWEAVE_SEED_DEMO.
+See DEPLOYMENT.md (Render + Vercel). Env vars: FRAUDWEAVE_HMAC_KEY, FRAUDWEAVE_ORIGINS, FRAUDWEAVE_SEED_DEMO.
 Seed demo data locally: `python scripts\seed_demo.py`.
 
 ## Reviewer access
