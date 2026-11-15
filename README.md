@@ -19,7 +19,7 @@ An India-focused cybersecurity prototype that helps cyber-awareness volunteers a
 | Health Check | https://fraudweave-api.onrender.com/health |
 | API Documentation | https://fraudweave-api.onrender.com/docs |
 | GitHub Repository | https://github.com/arushkumar-aiml/FRAUDWEAVE |
-| Demo Video | **[ADD DEMO VIDEO LINK HERE]** |
+| Demo Video | https://drive.google.com/file/d/1DcydjHEPhvH5uyp-JqWAYaMzx9oOlu0u/view?usp=drivesdk |
 
 > **Note:** The backend runs on a free tier. After inactivity, the first request may take approximately 30–60 seconds to wake up.
 
