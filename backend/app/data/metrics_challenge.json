@@ -1,0 +1,121 @@
+{
+  "n": 58,
+  "source_file": "app\\data\\challenge_claude60.csv",
+  "rules_frozen_note": "Run ONLY after freezing rules. Do not tune on this file and still call it independent.",
+  "full_pipeline": {
+    "precision": 0.929,
+    "recall": 0.481,
+    "f1": 0.634,
+    "false_positive_rate": 0.032,
+    "abstention_rate": 0.207,
+    "tp": 13,
+    "fp": 1,
+    "fn": 14,
+    "confusion": {
+      "legit": {
+        "low_apparent_risk": 25,
+        "suspicious": 1,
+        "unable_to_verify": 5
+      },
+      "scam": {
+        "suspicious": 13,
+        "low_apparent_risk": 7,
+        "unable_to_verify": 7
+      }
+    }
+  },
+  "rules_only": {
+    "precision": 0.929,
+    "recall": 0.481,
+    "f1": 0.634,
+    "false_positive_rate": 0.032,
+    "abstention_rate": 0.207,
+    "tp": 13,
+    "fp": 1,
+    "fn": 14,
+    "confusion": {
+      "legit": {
+        "low_apparent_risk": 25,
+        "suspicious": 1,
+        "unable_to_verify": 5
+      },
+      "scam": {
+        "suspicious": 13,
+        "low_apparent_risk": 7,
+        "unable_to_verify": 7
+      }
+    }
+  },
+  "by_kind": {
+    "legit_bank": {
+      "precision": 0.0,
+      "recall": null,
+      "f1": null,
+      "false_positive_rate": 0.083,
+      "abstention_rate": 0.0,
+      "tp": 0,
+      "fp": 1,
+      "fn": 0,
+      "confusion": {
+        "legit": {
+          "low_apparent_risk": 11,
+          "suspicious": 1
+        }
+      }
+    },
+    "legit_other": {
+      "precision": null,
+      "recall": null,
+      "f1": null,
+      "false_positive_rate": 0.0,
+      "abstention_rate": 0.091,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "confusion": {
+        "legit": {
+          "low_apparent_risk": 10,
+          "unable_to_verify": 1
+        }
+      }
+    },
+    "scam": {
+      "precision": 1.0,
+      "recall": 0.545,
+      "f1": 0.706,
+      "false_positive_rate": null,
+      "abstention_rate": 0.227,
+      "tp": 12,
+      "fp": 0,
+      "fn": 10,
+      "confusion": {
+        "scam": {
+          "suspicious": 12,
+          "low_apparent_risk": 5,
+          "unable_to_verify": 5
+        }
+      }
+    },
+    "borderline": {
+      "precision": 1.0,
+      "recall": 0.2,
+      "f1": 0.333,
+      "false_positive_rate": 0.0,
+      "abstention_rate": 0.462,
+      "tp": 1,
+      "fp": 0,
+      "fn": 4,
+      "confusion": {
+        "legit": {
+          "low_apparent_risk": 4,
+          "unable_to_verify": 4
+        },
+        "scam": {
+          "suspicious": 1,
+          "unable_to_verify": 2,
+          "low_apparent_risk": 2
+        }
+      }
+    }
+  }
+}
