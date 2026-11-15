@@ -1,4 +1,5 @@
 import json
+import os
 import time
 from fastapi import FastAPI, HTTPException, Request, Header, Depends
 from fastapi.middleware.cors import CORSMiddleware
@@ -20,31 +21,64 @@ def _startup():
 def health(): return {"status": "ok"}
 
 @app.post("/api/v1/analyze")
-def analyze_ep(req: AnalyzeRequest):
+def analyze_ep(req: AnalyzeRequest, request: Request):
+    _rate_limit("analyze", _client_ip(request), 60, 60, "Too many requests. Wait a minute and try again.")
     if not req.text.strip(): raise HTTPException(422, "text must not be blank")
     r = analyze(req.text); r.pop("_norm"); return r
 
-def require_reviewer(authorization: str | None = Header(default=None)):
+def require_reviewer(request: Request, authorization: str | None = Header(default=None)):
+    ip = _client_ip(request); key = ("authfail", ip)
+    if len(_recent(key, 900)) >= 10:
+        raise HTTPException(429, "Too many failed reviewer logins. Try again in 15 minutes.", headers={"Retry-After": "900"})
     err = auth.verify(authorization, config.reviewer_token())
-    if err: raise HTTPException(err[0], err[1], headers={"WWW-Authenticate": "Bearer"} if err[0] == 401 else None)
+    if err:
+        if err[0] in (401, 403): _HITS[key] = _recent(key, 900) + [time.time()]
+        raise HTTPException(err[0], err[1], headers={"WWW-Authenticate": "Bearer"} if err[0] == 401 else None)
 
 @app.get("/api/v1/auth/check", dependencies=[Depends(require_reviewer)])
 def auth_check(): return {"ok": True}
 
 _HITS: dict = {}
-def _rate_limit(ip: str, limit=20, window=3600):
-    now = time.time(); hits = [t for t in _HITS.get(ip, []) if now - t < window]
-    if len(hits) >= limit: raise HTTPException(429, "Too many reports from this address. Try later.")
-    hits.append(now); _HITS[ip] = hits
+
+def _client_ip(request: Request) -> str:
+    """Behind Render/Vercel proxies the socket address is the proxy, so trust X-Forwarded-For only when explicitly enabled."""
+    if os.environ.get("FRAUDWEAVE_TRUST_PROXY") == "1":
+        xff = request.headers.get("x-forwarded-for")
+        if xff: return xff.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
+
+def _recent(key, window):
+    now = time.time(); hits = [t for t in _HITS.get(key, []) if now - t < window]
+    if len(_HITS) > 5000: _HITS.clear()  # crude memory cap
+    return hits
+
+def _rate_limit(bucket: str, ip: str, limit: int, window: int, msg: str):
+    key = (bucket, ip); hits = _recent(key, window)
+    if len(hits) >= limit:
+        _HITS[key] = hits
+        raise HTTPException(429, msg, headers={"Retry-After": str(window)})
+    hits.append(time.time()); _HITS[key] = hits
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    resp = await call_next(request)
+    resp.headers["X-Content-Type-Options"] = "nosniff"
+    resp.headers["X-Frame-Options"] = "DENY"
+    resp.headers["Referrer-Policy"] = "no-referrer"
+    if not request.url.path.startswith(("/docs", "/redoc", "/openapi")):
+        resp.headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'"
+        resp.headers["Cache-Control"] = "no-store"
+    return resp
 
 @app.post("/api/v1/reports")
 def report(req: ReportRequest, request: Request):
-    _rate_limit(request.client.host if request.client else "unknown")
+    _rate_limit("report", _client_ip(request), 20, 3600, "Too many reports from this address. Try later.")
     if not req.consent: raise HTTPException(400, "Consent is required to store a report.")
     return service.store_report(req.text)
 
 @app.post("/api/v1/campaigns/link")
-def link_ep(req: LinkRequest):
+def link_ep(req: LinkRequest, request: Request):
+    _rate_limit("link", _client_ip(request), 60, 60, "Too many requests. Wait a minute and try again.")
     return link(service.side(req.a), service.side(req.b))
 
 @app.get("/api/v1/campaigns")

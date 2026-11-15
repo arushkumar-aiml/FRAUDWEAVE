@@ -11,6 +11,7 @@ New > Blueprint (uses `render.yaml`) OR New > Web Service with:
 - Start: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 - Env vars: `PYTHON_VERSION=3.11.9`, `FRAUDWEAVE_HMAC_KEY=<long random secret>`, `FRAUDWEAVE_REVIEWER_TOKEN=<second long random secret>`, `FRAUDWEAVE_SEED_DEMO=1`,
   `FRAUDWEAVE_ORIGINS=https://<your-vercel-app>.vercel.app`
+  `FRAUDWEAVE_TRUST_PROXY=1` (so per-IP rate limits and reviewer lockout use the real client IP behind Render's proxy)
 Check `https://<render-app>.onrender.com/health` returns {"status":"ok"}.
 Free tier sleeps when idle (first request ~30-60 s) and SQLite data resets on redeploy: demo data is re-seeded at startup.
 
